@@ -982,48 +982,50 @@ function openConfig() {
 function closeConfig() { document.getElementById('config-modal').classList.remove('open'); }
 
 // ══════════════════════════════════════
+// FIREBASE CONFIG (baked in)
+// ══════════════════════════════════════
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyDN5cdNmsdPtCrXLrmeGFLP9A3ntSyBXko",
+  authDomain: "cardholder-2d4ac.firebaseapp.com",
+  projectId: "cardholder-2d4ac",
+  storageBucket: "cardholder-2d4ac.firebasestorage.app",
+  messagingSenderId: "643707074671",
+  appId: "1:643707074671:web:f44dd77f6369ec0abe759a",
+};
+
+// ══════════════════════════════════════
 // FIREBASE INIT
 // ══════════════════════════════════════
 function initFirebase() {
   loadConfig();
-  if (!cfg.apiKey || !cfg.projectId) {
+  try {
+    try { firebase.app(); } catch(e) { firebase.initializeApp(FIREBASE_CONFIG); }
+    db = firebase.firestore();
+    auth = firebase.auth();
+    storage = firebase.storage();
+
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        currentUser = user;
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('app').style.display = 'block';
+        document.getElementById('setup-banner').style.display = 'none';
+        document.getElementById('user-name').textContent = user.displayName?.split(' ')[0] || 'User';
+        const initials = (user.displayName || 'U').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+        document.getElementById('user-avatar').textContent = initials;
+        loadCards();
+      } else {
+        document.getElementById('login-screen').style.display = 'flex';
+        document.getElementById('app').style.display = 'none';
+      }
+    });
+  } catch(err) {
+    console.error('Firebase init error:', err);
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('app').style.display = 'block';
     document.getElementById('setup-banner').style.display = 'flex';
-    // Run in demo mode (localStorage only)
     runDemoMode();
-    return false;
   }
-  try {
-    const app = firebase.app();
-  } catch(e) {
-    firebase.initializeApp({
-      apiKey: cfg.apiKey,
-      authDomain: cfg.authDomain,
-      projectId: cfg.projectId,
-      storageBucket: cfg.storageBucket,
-      messagingSenderId: cfg.messagingSenderId,
-      appId: cfg.appId,
-    });
-  }
-  db = firebase.firestore();
-  auth = firebase.auth();
-  storage = firebase.storage();
-
-  auth.onAuthStateChanged(user => {
-    if (user) {
-      currentUser = user;
-      document.getElementById('login-screen').style.display = 'none';
-      document.getElementById('app').style.display = 'block';
-      document.getElementById('user-name').textContent = user.displayName?.split(' ')[0] || 'User';
-      const initials = (user.displayName || 'U').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
-      document.getElementById('user-avatar').textContent = initials;
-      loadCards();
-    } else {
-      document.getElementById('login-screen').style.display = 'flex';
-      document.getElementById('app').style.display = 'none';
-    }
-  });
   return true;
 }
 
