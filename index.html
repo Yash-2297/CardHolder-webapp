@@ -4,6 +4,15 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>CardHolder — Your Personal Card Cabinet</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iYmciIHgxPSIwIiB5MT0iMCIgeDI9IjEiIHkyPSIxIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzFBN0RFMCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMwRDRBOEMiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgPC9kZWZzPgogIDxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiByeD0iMTEyIiBmaWxsPSJ1cmwoI2JnKSIvPgogIDxyZWN0IHg9IjEyMCIgeT0iMTQ4IiB3aWR0aD0iMjk1IiBoZWlnaHQ9IjE4NSIgcng9IjIyIiBmaWxsPSJ3aGl0ZSIgb3BhY2l0eT0iMC4yNSIvPgogIDxyZWN0IHg9Ijk3IiB5PSIxNzUiIHdpZHRoPSIyOTUiIGhlaWdodD0iMTg1IiByeD0iMjIiIGZpbGw9IndoaXRlIiBvcGFjaXR5PSIwLjk1Ii8+CiAgPHJlY3QgeD0iMTMwIiB5PSIyMTAiIHdpZHRoPSI1MiIgaGVpZ2h0PSI0MCIgcng9IjgiIGZpbGw9IiM2MEFFRkYiIG9wYWNpdHk9IjAuNyIvPgogIDxyZWN0IHg9IjEzMCIgeT0iMjcyIiB3aWR0aD0iMTgwIiBoZWlnaHQ9IjEyIiByeD0iNiIgZmlsbD0iIzFBN0RFMCIgb3BhY2l0eT0iMC4yNSIvPgogIDxyZWN0IHg9IjEzMCIgeT0iMjk0IiB3aWR0aD0iMTIwIiBoZWlnaHQ9IjEwIiByeD0iNSIgZmlsbD0iIzFBN0RFMCIgb3BhY2l0eT0iMC4xNSIvPgogIDxyZWN0IHg9IjMxMCIgeT0iMjEzIiB3aWR0aD0iNTAiIGhlaWdodD0iOCIgcng9IjQiIGZpbGw9IiMxQTdERTAiIG9wYWNpdHk9IjAuMiIvPgogIDxyZWN0IHg9IjMxMCIgeT0iMjI4IiB3aWR0aD0iMzgiIGhlaWdodD0iOCIgcng9IjQiIGZpbGw9IiMxQTdERTAiIG9wYWNpdHk9IjAuMTUiLz4KPC9zdmc+"/>
+<link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iYmciIHgxPSIwIiB5MT0iMCIgeDI9IjEiIHkyPSIxIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzFBN0RFMCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMwRDRBOEMiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgPC9kZWZzPgogIDxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiByeD0iMTEyIiBmaWxsPSJ1cmwoI2JnKSIvPgogIDxyZWN0IHg9IjEyMCIgeT0iMTQ4IiB3aWR0aD0iMjk1IiBoZWlnaHQ9IjE4NSIgcng9IjIyIiBmaWxsPSJ3aGl0ZSIgb3BhY2l0eT0iMC4yNSIvPgogIDxyZWN0IHg9Ijk3IiB5PSIxNzUiIHdpZHRoPSIyOTUiIGhlaWdodD0iMTg1IiByeD0iMjIiIGZpbGw9IndoaXRlIiBvcGFjaXR5PSIwLjk1Ii8+CiAgPHJlY3QgeD0iMTMwIiB5PSIyMTAiIHdpZHRoPSI1MiIgaGVpZ2h0PSI0MCIgcng9IjgiIGZpbGw9IiM2MEFFRkYiIG9wYWNpdHk9IjAuNyIvPgogIDxyZWN0IHg9IjEzMCIgeT0iMjcyIiB3aWR0aD0iMTgwIiBoZWlnaHQ9IjEyIiByeD0iNiIgZmlsbD0iIzFBN0RFMCIgb3BhY2l0eT0iMC4yNSIvPgogIDxyZWN0IHg9IjEzMCIgeT0iMjk0IiB3aWR0aD0iMTIwIiBoZWlnaHQ9IjEwIiByeD0iNSIgZmlsbD0iIzFBN0RFMCIgb3BhY2l0eT0iMC4xNSIvPgogIDxyZWN0IHg9IjMxMCIgeT0iMjEzIiB3aWR0aD0iNTAiIGhlaWdodD0iOCIgcng9IjQiIGZpbGw9IiMxQTdERTAiIG9wYWNpdHk9IjAuMiIvPgogIDxyZWN0IHg9IjMxMCIgeT0iMjI4IiB3aWR0aD0iMzgiIGhlaWdodD0iOCIgcng9IjQiIGZpbGw9IiMxQTdERTAiIG9wYWNpdHk9IjAuMTUiLz4KPC9zdmc+"/>
+<link rel="manifest" href="data:application/manifest+json;base64,eyJuYW1lIjogIkNhcmRIb2xkZXIiLCAic2hvcnRfbmFtZSI6ICJDYXJkSG9sZGVyIiwgImRlc2NyaXB0aW9uIjogIllvdXIgcGVyc29uYWwgY2FyZCBjYWJpbmV0IiwgInN0YXJ0X3VybCI6ICIvIiwgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsICJiYWNrZ3JvdW5kX2NvbG9yIjogIiNGN0ZBRkQiLCAidGhlbWVfY29sb3IiOiAiIzFBN0RFMCIsICJpY29ucyI6IFt7InNyYyI6ICJkYXRhOmltYWdlL3N2Zyt4bWw7YmFzZTY0LFBITjJaeUI0Yld4dWN6MGlhSFIwY0RvdkwzZDNkeTUzTXk1dmNtY3ZNakF3TUM5emRtY2lJSFpwWlhkQ2IzZzlJakFnTUNBMU1USWdOVEV5SWo0S0lDQThaR1ZtY3o0S0lDQWdJRHhzYVc1bFlYSkhjbUZrYVdWdWRDQnBaRDBpWW1jaUlIZ3hQU0l3SWlCNU1UMGlNQ0lnZURJOUlqRWlJSGt5UFNJeElqNEtJQ0FnSUNBZ1BITjBiM0FnYjJabWMyVjBQU0l3SlNJZ2MzUnZjQzFqYjJ4dmNqMGlJekZCTjBSRk1DSXZQZ29nSUNBZ0lDQThjM1J2Y0NCdlptWnpaWFE5SWpFd01DVWlJSE4wYjNBdFkyOXNiM0k5SWlNd1JEUkJPRU1pTHo0S0lDQWdJRHd2YkdsdVpXRnlSM0poWkdsbGJuUStDaUFnUEM5a1pXWnpQZ29nSUR4eVpXTjBJSGRwWkhSb1BTSTFNVElpSUdobGFXZG9kRDBpTlRFeUlpQnllRDBpTVRFeUlpQm1hV3hzUFNKMWNtd29JMkpuS1NJdlBnb2dJRHh5WldOMElIZzlJakV5TUNJZ2VUMGlNVFE0SWlCM2FXUjBhRDBpTWprMUlpQm9aV2xuYUhROUlqRTROU0lnY25nOUlqSXlJaUJtYVd4c1BTSjNhR2wwWlNJZ2IzQmhZMmwwZVQwaU1DNHlOU0l2UGdvZ0lEeHlaV04wSUhnOUlqazNJaUI1UFNJeE56VWlJSGRwWkhSb1BTSXlPVFVpSUdobGFXZG9kRDBpTVRnMUlpQnllRDBpTWpJaUlHWnBiR3c5SW5kb2FYUmxJaUJ2Y0dGamFYUjVQU0l3TGprMUlpOCtDaUFnUEhKbFkzUWdlRDBpTVRNd0lpQjVQU0l5TVRBaUlIZHBaSFJvUFNJMU1pSWdhR1ZwWjJoMFBTSTBNQ0lnY25nOUlqZ2lJR1pwYkd3OUlpTTJNRUZGUmtZaUlHOXdZV05wZEhrOUlqQXVOeUl2UGdvZ0lEeHlaV04wSUhnOUlqRXpNQ0lnZVQwaU1qY3lJaUIzYVdSMGFEMGlNVGd3SWlCb1pXbG5hSFE5SWpFeUlpQnllRDBpTmlJZ1ptbHNiRDBpSXpGQk4wUkZNQ0lnYjNCaFkybDBlVDBpTUM0eU5TSXZQZ29nSUR4eVpXTjBJSGc5SWpFek1DSWdlVDBpTWprMElpQjNhV1IwYUQwaU1USXdJaUJvWldsbmFIUTlJakV3SWlCeWVEMGlOU0lnWm1sc2JEMGlJekZCTjBSRk1DSWdiM0JoWTJsMGVUMGlNQzR4TlNJdlBnb2dJRHh5WldOMElIZzlJak14TUNJZ2VUMGlNakV6SWlCM2FXUjBhRDBpTlRBaUlHaGxhV2RvZEQwaU9DSWdjbmc5SWpRaUlHWnBiR3c5SWlNeFFUZEVSVEFpSUc5d1lXTnBkSGs5SWpBdU1pSXZQZ29nSUR4eVpXTjBJSGc5SWpNeE1DSWdlVDBpTWpJNElpQjNhV1IwYUQwaU16Z2lJR2hsYVdkb2REMGlPQ0lnY25nOUlqUWlJR1pwYkd3OUlpTXhRVGRFUlRBaUlHOXdZV05wZEhrOUlqQXVNVFVpTHo0S1BDOXpkbWMrIiwgInNpemVzIjogIjUxMng1MTIiLCAidHlwZSI6ICJpbWFnZS9zdmcreG1sIiwgInB1cnBvc2UiOiAiYW55IG1hc2thYmxlIn1dfQ=="/>
+<meta name="theme-color" content="#1A7DE0"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+<meta name="apple-mobile-web-app-title" content="CardHolder"/>
+<meta name="description" content="Your personal card cabinet — store, search and sync all your cards."/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
 <style>
@@ -1132,11 +1141,22 @@ function gotPhoto(side, input) {
   const file = input.files[0]; if (!file) return;
   const reader = new FileReader();
   reader.onload = e => {
-    const b64 = e.target.result;
-    if (side==='front') frontB64=b64; else backB64=b64;
-    const z = document.getElementById('zone-'+side);
-    z.classList.add('filled');
-    z.innerHTML = `<img src="${b64}" alt="${side}"/>`;
+    const img = new Image();
+    img.onload = () => {
+      // Compress to max 900px wide, quality 0.75
+      const MAX = 900;
+      let w = img.width, h = img.height;
+      if (w > MAX) { h = Math.round(h * MAX / w); w = MAX; }
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      const b64 = canvas.toDataURL('image/jpeg', 0.75);
+      if (side==='front') frontB64=b64; else backB64=b64;
+      const z = document.getElementById('zone-'+side);
+      z.classList.add('filled');
+      z.innerHTML = `<img src="${b64}" alt="${side}"/>`;
+    };
+    img.src = e.target.result;
   };
   reader.readAsDataURL(file);
 }
