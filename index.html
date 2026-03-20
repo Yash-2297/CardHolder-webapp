@@ -927,7 +927,7 @@ const FIREBASE_CONFIG = {
   appId: "1:643707074671:web:f44dd77f6369ec0abe759a",
 };
 const GEMINI_KEY = "AIzaSyB58J9keepalLoz1c44bOo6kKb6V0fVM9Y";
-const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite-preview-06-17:generateContent?key=${GEMINI_KEY}`;
+const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${GEMINI_KEY}`;
 
 // ═══════════════════════════════════════
 // STATE
@@ -1148,37 +1148,73 @@ async function analyseCard() {
   if (!frontB64 && !backB64) { toast('Upload at least one photo first.'); return; }
   const btn = document.getElementById('ai-btn');
   btn.disabled = true; btn.innerHTML = '<span class="spin"></span>';
+
   const images = [];
-  if (frontB64) images.push({ inlineData:{ mimeType:'image/jpeg', data:frontB64.split(',')[1] } });
-  if (backB64)  images.push({ inlineData:{ mimeType:'image/jpeg', data:backB64.split(',')[1] } });
-  const prompt = `Analyse this card image (business card, membership card, or ID card).
-Extract all visible information and respond ONLY with a valid JSON object using these exact keys:
-title, category (one of: business/membership/loyalty/other), name, phone, email, address, number, website, notes, rawText.
-- title: short descriptive name like "Yash HDFC Credit Card" or "Reliance Smart Loyalty"
-- rawText: every word/number you can read on the card
-- Use empty string "" for fields not found.
-Respond with ONLY the JSON object. No markdown, no explanation, no extra text.`;
+  if (frontB64) {
+    const mime = frontB64.split(';')[0].split(':')[1] || 'image/jpeg';
+    images.push({ inlineData:{ mimeType: mime, data: frontB64.split(',')[1] } });
+  }
+  if (backB64) {
+    const mime = backB64.split(';')[0].split(':')[1] || 'image/jpeg';
+    images.push({ inlineData:{ mimeType: mime, data: backB64.split(',')[1] } });
+  }
+
+  const prompt = `You are analysing a card photo (business card, membership card, ID card, or loyalty card).
+Extract all visible text and information. Return ONLY a raw JSON object — no markdown, no code fences, no explanation.
+Use exactly these keys: title, category, name, phone, email, address, city, number, website, notes, rawText
+Rules:
+- title: short label e.g. "Yash HDFC Card" or "Apollo Membership"
+- category: must be exactly one of: business / membership / loyalty / other
+- rawText: every single word and number visible on the card
+- For any field not found, use an empty string ""
+Example output: {"title":"...","category":"business","name":"...","phone":"...","email":"...","address":"...","city":"...","number":"...","website":"...","notes":"...","rawText":"..."}`;
+
   try {
     const res = await fetch(GEMINI_URL, {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ contents:[{ parts:[...images,{text:prompt}] }], generationConfig:{temperature:0.1} })
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{ parts: [...images, { text: prompt }] }],
+        generationConfig: { temperature: 0.1, responseMimeType: 'application/json' }
+      })
     });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err?.error?.message || 'API error ' + res.status);
+    }
+
     const data = await res.json();
     const raw = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
-    const clean = raw.replace(/```json|```/g,'').trim();
-    const p = JSON.parse(clean);
+    if (!raw) throw new Error('Empty response from Gemini');
+
+    // Robustly extract JSON — handles markdown fences, leading text, trailing text
+    let jsonStr = raw.trim();
+    const fenceMatch = jsonStr.match(/```(?:json)?\s*([\s\S]*?)```/);
+    if (fenceMatch) jsonStr = fenceMatch[1].trim();
+    const braceMatch = jsonStr.match(/\{[\s\S]*\}/);
+    if (braceMatch) jsonStr = braceMatch[0];
+
+    const p = JSON.parse(jsonStr);
+
     if (p.title)    document.getElementById('f-title').value = p.title;
-    if (p.category) document.getElementById('f-cat').value   = p.category;
+    if (p.category && ['business','membership','loyalty','other'].includes(p.category))
+                    document.getElementById('f-cat').value   = p.category;
     if (p.name)     document.getElementById('f-name').value  = p.name;
     if (p.phone)    document.getElementById('f-phone').value = p.phone;
     if (p.email)    document.getElementById('f-email').value = p.email;
     if (p.address)  document.getElementById('f-addr').value  = p.address;
+    if (p.city)     document.getElementById('f-city').value  = p.city;
     if (p.number)   document.getElementById('f-num').value   = p.number;
     if (p.website)  document.getElementById('f-web').value   = p.website;
     if (p.notes)    document.getElementById('f-notes').value = p.notes;
     if (p.rawText)  document.getElementById('f-raw').value   = p.rawText;
+
     toast('✨ Card analysed — please review and save.');
-  } catch(e) { toast('AI error: ' + e.message + '. Fill in manually.'); }
+  } catch(e) {
+    console.error('Gemini error:', e);
+    toast('Could not auto-fill: ' + e.message + '. Please fill in manually.');
+  }
   btn.disabled = false; btn.innerHTML = 'Analyse';
 }
 
