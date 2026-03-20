@@ -1,0 +1,1383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>CardHolder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lora:ital,wght@0,400;0,500;1,400&family=Source+Sans+3:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg:        #F5F0E8;
+    --bg2:       #EDE8DC;
+    --bg3:       #E2DDD1;
+    --surface:   #FDFAF5;
+    --border:    #C8BFA8;
+    --border2:   #B0A690;
+    --text:      #2C2416;
+    --text2:     #5A4F3C;
+    --text3:     #8C7E68;
+    --gold:      #8B6914;
+    --gold2:     #A07D1E;
+    --goldlight: #F0E4C0;
+    --red:       #8B2020;
+    --green:     #1A5C35;
+    --radius:    12px;
+    --shadow:    0 2px 12px rgba(44,36,22,0.10);
+    --shadow2:   0 6px 32px rgba(44,36,22,0.16);
+  }
+  [data-theme="dark"] {
+    --bg:        #1A1710;
+    --bg2:       #221F16;
+    --bg3:       #2A261B;
+    --surface:   #201D14;
+    --border:    #3E3A2E;
+    --border2:   #524D3E;
+    --text:      #EDE4D0;
+    --text2:     #B8A98C;
+    --text3:     #7A6E58;
+    --gold:      #C8A84A;
+    --gold2:     #D4B85A;
+    --goldlight: #3A2E10;
+    --red:       #C85A5A;
+    --green:     #5AAB7A;
+    --shadow:    0 2px 12px rgba(0,0,0,0.40);
+    --shadow2:   0 6px 32px rgba(0,0,0,0.60);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Source Sans 3', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    transition: background 0.3s, color 0.3s;
+    font-size: 17px;
+    line-height: 1.6;
+  }
+
+  /* ── ORNAMENTAL BORDER ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 10px;
+    border: 1px solid var(--border);
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.4;
+  }
+
+  /* ── TOP BAR ── */
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 68px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: var(--shadow);
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .logo-icon {
+    width: 38px; height: 38px;
+    background: var(--gold);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+  .logo-text {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: 0.01em;
+  }
+  .logo-text span { color: var(--gold); }
+
+  .header-right {
+    display: flex; align-items: center; gap: 14px;
+  }
+
+  .theme-btn {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    color: var(--text2);
+    border-radius: 8px;
+    padding: 8px 14px;
+    cursor: pointer;
+    font-size: 20px;
+    transition: all 0.2s;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .theme-btn:hover { background: var(--bg3); border-color: var(--border2); }
+  .theme-btn .label { font-family: 'Source Sans 3', sans-serif; font-size: 14px; color: var(--text3); }
+
+  .user-pill {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 30px;
+    padding: 6px 16px 6px 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .user-pill:hover { background: var(--bg3); }
+  .user-avatar {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: var(--gold);
+    color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 600; font-size: 13px;
+  }
+  .user-name { font-size: 14px; color: var(--text2); }
+  .sign-out-btn {
+    background: none; border: none;
+    font-size: 13px; color: var(--text3);
+    cursor: pointer; padding: 4px 8px;
+    border-radius: 6px;
+    transition: color 0.2s;
+  }
+  .sign-out-btn:hover { color: var(--red); }
+
+  /* ── MAIN LAYOUT ── */
+  main {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 32px 24px 80px;
+  }
+
+  /* ── ORNAMENTAL DIVIDER ── */
+  .ornament {
+    display: flex; align-items: center; gap: 14px;
+    margin: 28px 0 24px;
+    color: var(--text3);
+    font-size: 13px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-family: 'Source Sans 3', sans-serif;
+  }
+  .ornament::before, .ornament::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border), transparent);
+  }
+  .ornament-symbol { color: var(--gold); font-size: 16px; }
+
+  /* ── SEARCH BAR ── */
+  .search-row {
+    display: flex; gap: 12px; margin-bottom: 28px;
+  }
+  .search-wrap {
+    flex: 1;
+    position: relative;
+  }
+  .search-wrap input {
+    width: 100%;
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 18px 14px 48px;
+    font-size: 17px;
+    font-family: 'Source Sans 3', sans-serif;
+    color: var(--text);
+    transition: border-color 0.2s;
+    outline: none;
+  }
+  .search-wrap input:focus { border-color: var(--gold); }
+  .search-wrap input::placeholder { color: var(--text3); }
+  .search-icon {
+    position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
+    color: var(--text3); font-size: 18px; pointer-events: none;
+  }
+
+  .add-btn {
+    background: var(--gold);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius);
+    padding: 14px 24px;
+    font-size: 17px;
+    font-family: 'Source Sans 3', sans-serif;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex; align-items: center; gap: 10px;
+    white-space: nowrap;
+    transition: background 0.2s, transform 0.1s;
+    box-shadow: 0 2px 8px rgba(139,105,20,0.3);
+  }
+  .add-btn:hover { background: var(--gold2); transform: translateY(-1px); }
+  .add-btn:active { transform: translateY(0); }
+
+  /* ── FILTER CHIPS ── */
+  .filter-row {
+    display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 28px;
+  }
+  .chip {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 30px;
+    padding: 8px 18px;
+    font-size: 15px;
+    font-family: 'Source Sans 3', sans-serif;
+    color: var(--text2);
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex; align-items: center; gap: 7px;
+  }
+  .chip:hover { border-color: var(--gold); color: var(--gold); }
+  .chip.active {
+    background: var(--goldlight);
+    border-color: var(--gold);
+    color: var(--gold);
+    font-weight: 600;
+  }
+
+  /* ── CARD GRID ── */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+  }
+
+  /* ── CARD TILE ── */
+  .card-tile {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.25s;
+    box-shadow: var(--shadow);
+    position: relative;
+  }
+  .card-tile:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow2);
+    border-color: var(--gold);
+  }
+  .card-tile-photo {
+    width: 100%;
+    height: 140px;
+    object-fit: cover;
+    background: var(--bg2);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text3);
+    font-size: 36px;
+    border-bottom: 1px solid var(--border);
+  }
+  .card-tile-photo img {
+    width: 100%; height: 100%; object-fit: cover;
+  }
+  .card-tile-body {
+    padding: 16px 18px 14px;
+  }
+  .card-tile-category {
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .card-tile-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 4px;
+    line-height: 1.3;
+  }
+  .card-tile-sub {
+    font-size: 14px;
+    color: var(--text3);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .card-tile-badge {
+    position: absolute; top: 10px; right: 10px;
+    background: rgba(0,0,0,0.45);
+    color: #fff;
+    font-size: 11px;
+    padding: 3px 9px;
+    border-radius: 20px;
+    backdrop-filter: blur(4px);
+  }
+  .card-tile-footer {
+    padding: 10px 18px;
+    border-top: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .card-date { font-size: 12px; color: var(--text3); }
+  .card-delete {
+    background: none; border: none;
+    color: var(--text3); cursor: pointer; font-size: 16px;
+    padding: 4px 6px; border-radius: 6px;
+    transition: color 0.2s;
+  }
+  .card-delete:hover { color: var(--red); }
+
+  /* ── EMPTY STATE ── */
+  .empty-state {
+    text-align: center;
+    padding: 80px 40px;
+    color: var(--text3);
+    grid-column: 1/-1;
+  }
+  .empty-state .big-icon { font-size: 64px; margin-bottom: 20px; opacity: 0.5; }
+  .empty-state h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px; color: var(--text2); margin-bottom: 10px;
+  }
+  .empty-state p { font-size: 16px; max-width: 340px; margin: 0 auto; }
+
+  /* ── MODAL BACKDROP ── */
+  .modal-bg {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.55);
+    backdrop-filter: blur(4px);
+    z-index: 500;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .modal-bg.open { display: flex; }
+
+  /* ── MODAL BOX ── */
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    box-shadow: var(--shadow2);
+    width: 100%;
+    max-width: 680px;
+    max-height: 92vh;
+    overflow-y: auto;
+    animation: slideUp 0.3s cubic-bezier(.22,.68,0,1.2);
+  }
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(40px) scale(0.97); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .modal-header {
+    padding: 24px 28px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .modal-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px; font-weight: 700;
+    color: var(--text);
+  }
+  .modal-close {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 6px 12px;
+    font-size: 20px; color: var(--text2);
+    cursor: pointer; transition: all 0.2s;
+  }
+  .modal-close:hover { background: var(--bg3); color: var(--text); }
+  .modal-body { padding: 24px 28px; }
+
+  /* ── PHOTO UPLOAD ZONE ── */
+  .photo-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 22px; }
+  .photo-zone {
+    border: 2px dashed var(--border);
+    border-radius: var(--radius);
+    padding: 24px 12px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.25s;
+    background: var(--bg2);
+    position: relative;
+    min-height: 140px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 8px;
+  }
+  .photo-zone:hover { border-color: var(--gold); background: var(--goldlight); }
+  .photo-zone.has-photo { border-style: solid; border-color: var(--gold); padding: 0; }
+  .photo-zone.has-photo img { width: 100%; height: 140px; object-fit: cover; border-radius: 10px; }
+  .photo-zone input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+  .photo-zone .zone-icon { font-size: 28px; color: var(--text3); }
+  .photo-zone .zone-label { font-size: 14px; color: var(--text3); font-weight: 600; }
+  .photo-zone .zone-sub { font-size: 12px; color: var(--text3); }
+
+  /* Camera button */
+  .cam-btn {
+    display: flex; align-items: center; gap: 6px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 5px 12px;
+    font-size: 13px; color: var(--text2);
+    cursor: pointer; transition: all 0.2s;
+    margin-top: 4px;
+    position: relative; z-index: 2;
+  }
+  .cam-btn:hover { border-color: var(--gold); color: var(--gold); }
+  .cam-btn input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+
+  /* ── FORM FIELDS ── */
+  .field { margin-bottom: 18px; }
+  .field label {
+    display: block; margin-bottom: 6px;
+    font-size: 14px; font-weight: 600;
+    color: var(--text2); letter-spacing: 0.04em;
+  }
+  .field input, .field select, .field textarea {
+    width: 100%;
+    background: var(--bg2);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px 16px;
+    font-size: 16px;
+    font-family: 'Source Sans 3', sans-serif;
+    color: var(--text);
+    transition: border-color 0.2s;
+    outline: none;
+  }
+  .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--gold); }
+  .field textarea { resize: vertical; min-height: 80px; }
+  .field select { appearance: none; cursor: pointer; }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+  /* ── AI BUTTON ── */
+  .ai-row {
+    display: flex; align-items: center; gap: 14px;
+    background: var(--goldlight);
+    border: 1px solid var(--gold);
+    border-radius: var(--radius);
+    padding: 14px 18px;
+    margin-bottom: 22px;
+  }
+  .ai-icon { font-size: 24px; }
+  .ai-text { flex: 1; }
+  .ai-text strong { display: block; font-size: 15px; color: var(--text); }
+  .ai-text span { font-size: 13px; color: var(--text2); }
+  .ai-analyze-btn {
+    background: var(--gold);
+    color: #fff;
+    border: none; border-radius: 8px;
+    padding: 10px 18px;
+    font-size: 14px; font-weight: 600;
+    cursor: pointer; transition: all 0.2s;
+    white-space: nowrap;
+    font-family: 'Source Sans 3', sans-serif;
+  }
+  .ai-analyze-btn:hover { background: var(--gold2); }
+  .ai-analyze-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+  /* ── SPINNER ── */
+  .spinner {
+    display: inline-block;
+    width: 18px; height: 18px;
+    border: 2.5px solid rgba(255,255,255,0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── SAVE BUTTON ── */
+  .save-btn {
+    width: 100%;
+    background: var(--gold);
+    color: #fff;
+    border: none; border-radius: var(--radius);
+    padding: 16px;
+    font-size: 18px; font-weight: 600;
+    font-family: 'Source Sans 3', sans-serif;
+    cursor: pointer; transition: all 0.2s;
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    margin-top: 8px;
+  }
+  .save-btn:hover { background: var(--gold2); }
+  .save-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+  /* ── DETAIL MODAL ── */
+  .detail-photos {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+    margin-bottom: 22px;
+  }
+  .detail-photo-wrap {
+    border: 1px solid var(--border); border-radius: var(--radius);
+    overflow: hidden; background: var(--bg2);
+  }
+  .detail-photo-wrap img { width: 100%; display: block; max-height: 200px; object-fit: cover; }
+  .detail-photo-label {
+    font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--text3); padding: 8px 12px; text-align: center;
+    background: var(--bg3); border-top: 1px solid var(--border);
+  }
+  .detail-photo-wrap.empty {
+    height: 160px; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 6px;
+    color: var(--text3); font-size: 28px;
+  }
+
+  .detail-fields {
+    display: grid; gap: 12px;
+  }
+  .detail-field {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px 16px;
+    display: flex; align-items: flex-start; gap: 12px;
+  }
+  .detail-field-icon { font-size: 18px; margin-top: 2px; }
+  .detail-field-content {}
+  .detail-field-label { font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text3); }
+  .detail-field-value { font-size: 16px; color: var(--text); margin-top: 2px; word-break: break-word; }
+
+  .detail-raw {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 14px 16px;
+    font-size: 13px; color: var(--text2);
+    white-space: pre-wrap; word-break: break-word;
+    max-height: 160px; overflow-y: auto;
+    margin-top: 14px; font-family: 'Lora', serif;
+    line-height: 1.7;
+  }
+
+  /* ── LOGIN SCREEN ── */
+  #login-screen {
+    min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    padding: 40px 20px;
+  }
+  .login-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    box-shadow: var(--shadow2);
+    padding: 52px 48px;
+    text-align: center;
+    max-width: 420px;
+    width: 100%;
+  }
+  .login-logo {
+    width: 72px; height: 72px;
+    background: var(--gold);
+    border-radius: 18px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 36px;
+    margin: 0 auto 24px;
+  }
+  .login-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 32px; font-weight: 700;
+    color: var(--text); margin-bottom: 6px;
+  }
+  .login-title span { color: var(--gold); }
+  .login-sub {
+    font-size: 16px; color: var(--text2); margin-bottom: 36px;
+    font-family: 'Lora', serif; font-style: italic;
+  }
+  .google-btn {
+    width: 100%;
+    display: flex; align-items: center; justify-content: center; gap: 14px;
+    background: var(--bg2);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 24px;
+    font-size: 17px; font-weight: 600;
+    font-family: 'Source Sans 3', sans-serif;
+    color: var(--text);
+    cursor: pointer; transition: all 0.25s;
+  }
+  .google-btn:hover { background: var(--bg3); border-color: var(--gold); transform: translateY(-1px); }
+  .google-icon { font-size: 22px; }
+
+  .login-note {
+    margin-top: 20px; font-size: 13px; color: var(--text3);
+    font-family: 'Lora', serif;
+    line-height: 1.6;
+  }
+
+  /* ── TOAST ── */
+  #toast {
+    position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%);
+    background: var(--text);
+    color: var(--bg);
+    padding: 12px 24px;
+    border-radius: 30px;
+    font-size: 15px;
+    z-index: 9999;
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+    font-weight: 500;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  }
+  #toast.show { opacity: 1; }
+
+  /* ── SETUP BANNER ── */
+  .setup-banner {
+    background: var(--goldlight);
+    border: 1px solid var(--gold);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    margin-bottom: 24px;
+    font-size: 15px;
+    color: var(--text2);
+    display: flex; align-items: center; gap: 12px;
+  }
+  .setup-banner a { color: var(--gold); font-weight: 600; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 600px) {
+    header { padding: 0 16px; height: 60px; }
+    .logo-text { font-size: 20px; }
+    main { padding: 20px 14px 60px; }
+    .photo-row { grid-template-columns: 1fr; }
+    .field-row { grid-template-columns: 1fr; }
+    .detail-photos { grid-template-columns: 1fr; }
+    .login-card { padding: 36px 24px; }
+    .add-btn .btn-text { display: none; }
+    .search-row { gap: 8px; }
+  }
+
+  /* ── CONFIG MODAL ── */
+  .config-section { margin-bottom: 22px; }
+  .config-section h4 {
+    font-family: 'Playfair Display', serif;
+    font-size: 16px; margin-bottom: 10px; color: var(--text);
+  }
+  .config-note { font-size: 13px; color: var(--text3); margin-top: 6px; line-height: 1.5; }
+  .config-note a { color: var(--gold); }
+  .config-status {
+    font-size: 13px; padding: 4px 10px; border-radius: 20px;
+    display: inline-block; margin-top: 6px;
+  }
+  .config-status.ok { background: #e8f5e9; color: var(--green); }
+  .config-status.warn { background: var(--goldlight); color: var(--gold); }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════
+     LOGIN SCREEN
+══════════════════════════════════════ -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">🗂️</div>
+    <h1 class="login-title">Card<span>Holder</span></h1>
+    <p class="login-sub">Your personal card cabinet, always with you</p>
+    <button class="google-btn" onclick="signInWithGoogle()">
+      <span class="google-icon">🔐</span>
+      Sign in with Google
+    </button>
+    <p class="login-note">
+      Your cards are stored privately in your account<br/>
+      and sync across all your devices.
+    </p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     MAIN APP
+══════════════════════════════════════ -->
+<div id="app" style="display:none">
+  <header>
+    <div class="logo">
+      <div class="logo-icon">🗂️</div>
+      <span class="logo-text">Card<span>Holder</span></span>
+    </div>
+    <div class="header-right">
+      <button class="theme-btn" onclick="toggleTheme()" title="Toggle dark/light mode">
+        <span id="theme-icon">🌙</span>
+        <span class="label" id="theme-label">Dark</span>
+      </button>
+      <button class="theme-btn" onclick="openConfig()" title="Settings" style="font-size:16px">
+        ⚙️ <span class="label">Setup</span>
+      </button>
+      <div class="user-pill">
+        <div class="user-avatar" id="user-avatar">?</div>
+        <span class="user-name" id="user-name">User</span>
+        <button class="sign-out-btn" onclick="signOutUser()">Sign out</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="ornament"><span class="ornament-symbol">❧</span> My Cards <span class="ornament-symbol">❧</span></div>
+
+    <div id="setup-banner" class="setup-banner" style="display:none">
+      ⚙️ <span>First-time setup needed. Click <strong>Setup</strong> in the top bar to add your Firebase keys for login & sync. Gemini AI is already configured. <a href="#" onclick="openConfig()">Open setup →</a></span>
+    </div>
+
+    <div class="search-row">
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="search-input" placeholder="Search by name, number, address, store…" oninput="filterCards()"/>
+      </div>
+      <button class="add-btn" onclick="openAddModal()">
+        <span>＋</span>
+        <span class="btn-text">Add Card</span>
+      </button>
+    </div>
+
+    <div class="filter-row">
+      <button class="chip active" data-filter="all" onclick="setFilter('all')">🃏 All Cards</button>
+      <button class="chip" data-filter="business" onclick="setFilter('business')">👤 Business</button>
+      <button class="chip" data-filter="membership" onclick="setFilter('membership')">🪪 Membership / ID</button>
+      <button class="chip" data-filter="loyalty" onclick="setFilter('loyalty')">⭐ Loyalty</button>
+      <button class="chip" data-filter="other" onclick="setFilter('other')">📋 Other</button>
+    </div>
+
+    <div class="card-grid" id="card-grid">
+      <div class="empty-state">
+        <div class="big-icon">🗂️</div>
+        <h3>No cards yet</h3>
+        <p>Click "Add Card" to photograph and store your first card.</p>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- ══════════════════════════════════════
+     ADD CARD MODAL
+══════════════════════════════════════ -->
+<div class="modal-bg" id="add-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">📸 Add New Card</span>
+      <button class="modal-close" onclick="closeAddModal()">✕</button>
+    </div>
+    <div class="modal-body">
+
+      <!-- Photos -->
+      <div class="photo-row">
+        <div>
+          <div style="font-size:13px;font-weight:600;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px;">Front Side</div>
+          <div class="photo-zone" id="front-zone" onclick="triggerFile('front-file')">
+            <span class="zone-icon">📷</span>
+            <span class="zone-label">Front of card</span>
+            <span class="zone-sub">Click to upload</span>
+            <input type="file" id="front-file" accept="image/*" onchange="handlePhoto('front', this)" style="display:none"/>
+          </div>
+          <button class="cam-btn" onclick="event.stopPropagation()" style="margin-top:6px">
+            📷 Use camera
+            <input type="file" accept="image/*" capture="environment" onchange="handlePhoto('front', this)"/>
+          </button>
+        </div>
+        <div>
+          <div style="font-size:13px;font-weight:600;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px;">Back Side</div>
+          <div class="photo-zone" id="back-zone" onclick="triggerFile('back-file')">
+            <span class="zone-icon">📷</span>
+            <span class="zone-label">Back of card</span>
+            <span class="zone-sub">Click to upload</span>
+            <input type="file" id="back-file" accept="image/*" onchange="handlePhoto('back', this)" style="display:none"/>
+          </div>
+          <button class="cam-btn" onclick="event.stopPropagation()" style="margin-top:6px">
+            📷 Use camera
+            <input type="file" accept="image/*" capture="environment" onchange="handlePhoto('back', this)"/>
+          </button>
+        </div>
+      </div>
+
+      <!-- AI Row -->
+      <div class="ai-row">
+        <span class="ai-icon">✨</span>
+        <div class="ai-text">
+          <strong>Auto-fill with AI</strong>
+          <span>Upload photos above, then let Gemini read and fill in all details.</span>
+        </div>
+        <button class="ai-analyze-btn" id="analyze-btn" onclick="analyzeWithGemini()">
+          Analyze Card
+        </button>
+      </div>
+
+      <!-- Form fields -->
+      <div class="field">
+        <label>Card Title</label>
+        <input type="text" id="f-title" placeholder="e.g. Yash's Aadhaar Card / HDFC Business Card"/>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Category</label>
+          <select id="f-category">
+            <option value="business">👤 Business Card</option>
+            <option value="membership">🪪 Membership / ID</option>
+            <option value="loyalty">⭐ Loyalty Card</option>
+            <option value="other">📋 Other</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Person / Organisation</label>
+          <input type="text" id="f-name" placeholder="Name on card"/>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Phone Number</label>
+          <input type="text" id="f-phone" placeholder="+91 …"/>
+        </div>
+        <div class="field">
+          <label>Email</label>
+          <input type="text" id="f-email" placeholder="email@example.com"/>
+        </div>
+      </div>
+      <div class="field">
+        <label>Address</label>
+        <input type="text" id="f-address" placeholder="Full address"/>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Card Number / ID</label>
+          <input type="text" id="f-number" placeholder="Card or ID number"/>
+        </div>
+        <div class="field">
+          <label>Website / Social</label>
+          <input type="text" id="f-website" placeholder="www.example.com"/>
+        </div>
+      </div>
+      <div class="field">
+        <label>Notes</label>
+        <textarea id="f-notes" placeholder="Any extra information…"></textarea>
+      </div>
+      <div class="field">
+        <label>All Text Found on Card</label>
+        <textarea id="f-raw" placeholder="Raw text extracted from card (auto-filled by AI)…"></textarea>
+      </div>
+
+      <button class="save-btn" onclick="saveCard()">
+        <span>💾</span> Save Card
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     DETAIL MODAL
+══════════════════════════════════════ -->
+<div class="modal-bg" id="detail-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title" id="detail-title">Card Details</span>
+      <button class="modal-close" onclick="closeDetail()">✕</button>
+    </div>
+    <div class="modal-body" id="detail-body"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     CONFIG MODAL
+══════════════════════════════════════ -->
+<div class="modal-bg" id="config-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">⚙️ Setup & Configuration</span>
+      <button class="modal-close" onclick="closeConfig()">✕</button>
+    </div>
+    <div class="modal-body">
+
+      <div class="config-section">
+        <h4>🔥 Firebase Configuration</h4>
+        <p class="config-note">
+          Create a free project at <a href="https://console.firebase.google.com" target="_blank">console.firebase.google.com</a> → 
+          Project Settings → General → Your Apps → Add Web App → copy the config object values below.
+          Enable <strong>Authentication</strong> (Google provider) and <strong>Firestore Database</strong> in your project.
+        </p>
+        <div class="field" style="margin-top:12px"><label>API Key</label><input type="text" id="cfg-apiKey" placeholder="AIza…"/></div>
+        <div class="field"><label>Auth Domain</label><input type="text" id="cfg-authDomain" placeholder="your-project.firebaseapp.com"/></div>
+        <div class="field"><label>Project ID</label><input type="text" id="cfg-projectId" placeholder="your-project-id"/></div>
+        <div class="field"><label>Storage Bucket</label><input type="text" id="cfg-storageBucket" placeholder="your-project.appspot.com"/></div>
+        <div class="field"><label>Messaging Sender ID</label><input type="text" id="cfg-messagingSenderId" placeholder="123456789"/></div>
+        <div class="field"><label>App ID</label><input type="text" id="cfg-appId" placeholder="1:123:web:abc…"/></div>
+      </div>
+
+      <div class="config-section">
+        <h4>✨ Gemini API Key (optional — already configured)</h4>
+        <p class="config-note">
+          A default Gemini key is built in. You can add your own key from
+          <a href="https://aistudio.google.com/app/apikey" target="_blank">aistudio.google.com</a> if you prefer.
+          Remember to restrict your key to your domain in Google Cloud Console.
+        </p>
+        <div class="field" style="margin-top:12px"><label>Gemini API Key (leave blank to use default)</label><input type="text" id="cfg-gemini" placeholder="AIza… (optional)"/></div>
+      </div>
+
+      <button class="save-btn" onclick="saveConfig()" style="margin-top:0">
+        💾 Save Configuration
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<!-- ══════════════════════════════════════
+     SCRIPTS
+══════════════════════════════════════ -->
+<!-- Firebase v9 compat (CDN) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+
+<script>
+// ══════════════════════════════════════
+// STATE
+// ══════════════════════════════════════
+const DEFAULT_GEMINI_KEY = 'AIzaSyB58J9keepalLoz1c44bOo6kKb6V0fVM9Y';
+let db = null, auth = null, storage = null, currentUser = null;
+let cards = [];
+let currentFilter = 'all';
+let frontB64 = null, backB64 = null;
+let frontBlob = null, backBlob = null;
+let editingId = null;
+let cfg = {};
+
+// ══════════════════════════════════════
+// CONFIG (localStorage)
+// ══════════════════════════════════════
+function loadConfig() {
+  try { cfg = JSON.parse(localStorage.getItem('ch_config') || '{}'); } catch(e) { cfg = {}; }
+}
+function saveConfig() {
+  cfg = {
+    apiKey: document.getElementById('cfg-apiKey').value.trim(),
+    authDomain: document.getElementById('cfg-authDomain').value.trim(),
+    projectId: document.getElementById('cfg-projectId').value.trim(),
+    storageBucket: document.getElementById('cfg-storageBucket').value.trim(),
+    messagingSenderId: document.getElementById('cfg-messagingSenderId').value.trim(),
+    appId: document.getElementById('cfg-appId').value.trim(),
+    geminiKey: document.getElementById('cfg-gemini').value.trim(),
+  };
+  localStorage.setItem('ch_config', JSON.stringify(cfg));
+  closeConfig();
+  toast('✅ Configuration saved — please refresh the page.');
+}
+function openConfig() {
+  loadConfig();
+  document.getElementById('cfg-apiKey').value = cfg.apiKey || '';
+  document.getElementById('cfg-authDomain').value = cfg.authDomain || '';
+  document.getElementById('cfg-projectId').value = cfg.projectId || '';
+  document.getElementById('cfg-storageBucket').value = cfg.storageBucket || '';
+  document.getElementById('cfg-messagingSenderId').value = cfg.messagingSenderId || '';
+  document.getElementById('cfg-appId').value = cfg.appId || '';
+  document.getElementById('cfg-gemini').value = cfg.geminiKey || '';
+  document.getElementById('config-modal').classList.add('open');
+}
+function closeConfig() { document.getElementById('config-modal').classList.remove('open'); }
+
+// ══════════════════════════════════════
+// FIREBASE INIT
+// ══════════════════════════════════════
+function initFirebase() {
+  loadConfig();
+  if (!cfg.apiKey || !cfg.projectId) {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    document.getElementById('setup-banner').style.display = 'flex';
+    // Run in demo mode (localStorage only)
+    runDemoMode();
+    return false;
+  }
+  try {
+    const app = firebase.app();
+  } catch(e) {
+    firebase.initializeApp({
+      apiKey: cfg.apiKey,
+      authDomain: cfg.authDomain,
+      projectId: cfg.projectId,
+      storageBucket: cfg.storageBucket,
+      messagingSenderId: cfg.messagingSenderId,
+      appId: cfg.appId,
+    });
+  }
+  db = firebase.firestore();
+  auth = firebase.auth();
+  storage = firebase.storage();
+
+  auth.onAuthStateChanged(user => {
+    if (user) {
+      currentUser = user;
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('app').style.display = 'block';
+      document.getElementById('user-name').textContent = user.displayName?.split(' ')[0] || 'User';
+      const initials = (user.displayName || 'U').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+      document.getElementById('user-avatar').textContent = initials;
+      loadCards();
+    } else {
+      document.getElementById('login-screen').style.display = 'flex';
+      document.getElementById('app').style.display = 'none';
+    }
+  });
+  return true;
+}
+
+function runDemoMode() {
+  // No Firebase — use localStorage as demo
+  currentUser = { uid: 'demo', displayName: 'Demo User' };
+  document.getElementById('user-name').textContent = 'Demo';
+  document.getElementById('user-avatar').textContent = 'D';
+  loadCards();
+}
+
+function signInWithGoogle() {
+  if (!auth) { toast('⚙️ Please complete Setup first.'); openConfig(); return; }
+  const provider = new firebase.auth.GoogleAuthProvider();
+  auth.signInWithPopup(provider).catch(err => toast('Sign-in error: ' + err.message));
+}
+
+function signOutUser() {
+  if (auth) auth.signOut();
+  else { currentUser = null; document.getElementById('login-screen').style.display='flex'; document.getElementById('app').style.display='none'; }
+}
+
+// ══════════════════════════════════════
+// CARDS — LOAD / SAVE / DELETE
+// ══════════════════════════════════════
+function loadCards() {
+  if (db && currentUser && currentUser.uid !== 'demo') {
+    db.collection('users').doc(currentUser.uid).collection('cards')
+      .orderBy('createdAt', 'desc')
+      .onSnapshot(snap => {
+        cards = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        renderCards();
+      });
+  } else {
+    // Demo / offline: localStorage
+    try { cards = JSON.parse(localStorage.getItem('ch_cards') || '[]'); } catch(e) { cards = []; }
+    renderCards();
+  }
+}
+
+async function saveCard() {
+  const title = document.getElementById('f-title').value.trim();
+  if (!title) { toast('Please enter a card title.'); return; }
+
+  const btn = document.querySelector('.save-btn');
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Saving…';
+
+  const card = {
+    title,
+    category: document.getElementById('f-category').value,
+    name: document.getElementById('f-name').value.trim(),
+    phone: document.getElementById('f-phone').value.trim(),
+    email: document.getElementById('f-email').value.trim(),
+    address: document.getElementById('f-address').value.trim(),
+    number: document.getElementById('f-number').value.trim(),
+    website: document.getElementById('f-website').value.trim(),
+    notes: document.getElementById('f-notes').value.trim(),
+    rawText: document.getElementById('f-raw').value.trim(),
+    createdAt: new Date().toISOString(),
+    frontPhoto: frontB64 || null,
+    backPhoto: backB64 || null,
+  };
+
+  try {
+    if (db && currentUser && currentUser.uid !== 'demo') {
+      const ref = db.collection('users').doc(currentUser.uid).collection('cards');
+      if (editingId) await ref.doc(editingId).set(card, { merge: true });
+      else await ref.add(card);
+    } else {
+      if (editingId) {
+        const idx = cards.findIndex(c=>c.id===editingId);
+        if (idx>=0) cards[idx] = { id: editingId, ...card };
+      } else {
+        card.id = 'card_' + Date.now();
+        cards.unshift(card);
+      }
+      localStorage.setItem('ch_cards', JSON.stringify(cards));
+      renderCards();
+    }
+    toast('✅ Card saved!');
+    closeAddModal();
+  } catch(err) {
+    toast('Error saving: ' + err.message);
+  }
+  btn.disabled = false; btn.innerHTML = '<span>💾</span> Save Card';
+}
+
+async function deleteCard(id, evt) {
+  evt.stopPropagation();
+  if (!confirm('Delete this card?')) return;
+  if (db && currentUser && currentUser.uid !== 'demo') {
+    await db.collection('users').doc(currentUser.uid).collection('cards').doc(id).delete();
+  } else {
+    cards = cards.filter(c => c.id !== id);
+    localStorage.setItem('ch_cards', JSON.stringify(cards));
+    renderCards();
+  }
+  toast('🗑️ Card deleted.');
+}
+
+// ══════════════════════════════════════
+// RENDER
+// ══════════════════════════════════════
+const categoryLabel = { business:'Business Card', membership:'Membership / ID', loyalty:'Loyalty Card', other:'Other' };
+const categoryIcon  = { business:'👤', membership:'🪪', loyalty:'⭐', other:'📋' };
+
+function renderCards() {
+  const q = document.getElementById('search-input').value.toLowerCase();
+  let list = cards;
+  if (currentFilter !== 'all') list = list.filter(c => c.category === currentFilter);
+  if (q) list = list.filter(c => {
+    return [c.title,c.name,c.phone,c.email,c.address,c.number,c.website,c.notes,c.rawText]
+      .join(' ').toLowerCase().includes(q);
+  });
+
+  const grid = document.getElementById('card-grid');
+  if (!list.length) {
+    grid.innerHTML = `<div class="empty-state">
+      <div class="big-icon">🗂️</div>
+      <h3>${q ? 'No cards found' : 'No cards yet'}</h3>
+      <p>${q ? 'Try a different search term.' : 'Click "Add Card" to photograph and store your first card.'}</p>
+    </div>`;
+    return;
+  }
+
+  grid.innerHTML = list.map(card => {
+    const photoHtml = card.frontPhoto
+      ? `<div class="card-tile-photo"><img src="${card.frontPhoto}" alt="card front"/></div>`
+      : `<div class="card-tile-photo">${categoryIcon[card.category]||'🃏'}</div>`;
+    const date = card.createdAt ? new Date(card.createdAt).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}) : '';
+    return `
+    <div class="card-tile" onclick="openDetail('${card.id}')">
+      ${photoHtml}
+      <span class="card-tile-badge">${categoryIcon[card.category]||'🃏'} ${categoryLabel[card.category]||'Card'}</span>
+      <div class="card-tile-body">
+        <div class="card-tile-category">${categoryLabel[card.category]||'Card'}</div>
+        <div class="card-tile-title">${esc(card.title)}</div>
+        <div class="card-tile-sub">${esc(card.name||card.phone||card.number||'—')}</div>
+      </div>
+      <div class="card-tile-footer">
+        <span class="card-date">${date}</span>
+        <button class="card-delete" onclick="deleteCard('${card.id}',event)" title="Delete">🗑️</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function filterCards() { renderCards(); }
+function setFilter(f) {
+  currentFilter = f;
+  document.querySelectorAll('.chip').forEach(c => c.classList.toggle('active', c.dataset.filter === f));
+  renderCards();
+}
+
+// ══════════════════════════════════════
+// DETAIL VIEW
+// ══════════════════════════════════════
+function openDetail(id) {
+  const card = cards.find(c => c.id === id);
+  if (!card) return;
+
+  document.getElementById('detail-title').textContent = card.title;
+
+  const fields = [
+    { icon:'👤', label:'Name',       val: card.name },
+    { icon:'📞', label:'Phone',      val: card.phone },
+    { icon:'📧', label:'Email',      val: card.email },
+    { icon:'🏠', label:'Address',    val: card.address },
+    { icon:'🔢', label:'Card / ID No.', val: card.number },
+    { icon:'🌐', label:'Website',    val: card.website },
+    { icon:'📝', label:'Notes',      val: card.notes },
+  ].filter(f => f.val);
+
+  const frontHtml = card.frontPhoto
+    ? `<img src="${card.frontPhoto}" alt="Front"/>`
+    : `<div class="detail-photo-wrap empty"><span>📷</span><span style="font-size:13px;color:var(--text3)">No front photo</span></div>`;
+  const backHtml = card.backPhoto
+    ? `<img src="${card.backPhoto}" alt="Back"/>`
+    : ``;
+
+  document.getElementById('detail-body').innerHTML = `
+    <div class="detail-photos">
+      <div class="detail-photo-wrap">
+        ${card.frontPhoto ? `<img src="${card.frontPhoto}" alt="Front"/>` : ''}
+        ${!card.frontPhoto ? `<div style="height:160px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:var(--text3);font-size:28px">📷<span style="font-size:13px">No front photo</span></div>` : ''}
+        <div class="detail-photo-label">Front</div>
+      </div>
+      <div class="detail-photo-wrap">
+        ${card.backPhoto ? `<img src="${card.backPhoto}" alt="Back"/>` : ''}
+        ${!card.backPhoto ? `<div style="height:160px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:var(--text3);font-size:28px">📷<span style="font-size:13px">No back photo</span></div>` : ''}
+        <div class="detail-photo-label">Back</div>
+      </div>
+    </div>
+    <div class="detail-fields">
+      ${fields.map(f=>`
+        <div class="detail-field">
+          <span class="detail-field-icon">${f.icon}</span>
+          <div class="detail-field-content">
+            <div class="detail-field-label">${f.label}</div>
+            <div class="detail-field-value">${esc(f.val)}</div>
+          </div>
+        </div>`).join('')}
+    </div>
+    ${card.rawText ? `<details style="margin-top:14px"><summary style="cursor:pointer;font-size:14px;color:var(--text3)">📄 Raw text from card</summary><div class="detail-raw">${esc(card.rawText)}</div></details>` : ''}
+  `;
+
+  document.getElementById('detail-modal').classList.add('open');
+}
+function closeDetail() { document.getElementById('detail-modal').classList.remove('open'); }
+
+// ══════════════════════════════════════
+// ADD MODAL
+// ══════════════════════════════════════
+function openAddModal() {
+  editingId = null;
+  frontB64 = null; backB64 = null;
+  ['f-title','f-name','f-phone','f-email','f-address','f-number','f-website','f-notes','f-raw'].forEach(id=>{
+    document.getElementById(id).value='';
+  });
+  document.getElementById('f-category').value = 'business';
+  resetZone('front'); resetZone('back');
+  document.getElementById('add-modal').classList.add('open');
+}
+function closeAddModal() { document.getElementById('add-modal').classList.remove('open'); }
+
+function triggerFile(id) { document.getElementById(id).click(); }
+
+function resetZone(side) {
+  const zone = document.getElementById(side+'-zone');
+  zone.classList.remove('has-photo');
+  zone.innerHTML = `
+    <span class="zone-icon">📷</span>
+    <span class="zone-label">${side==='front'?'Front':'Back'} of card</span>
+    <span class="zone-sub">Click to upload</span>
+    <input type="file" id="${side}-file" accept="image/*" onchange="handlePhoto('${side}', this)" style="display:none"/>`;
+}
+
+function handlePhoto(side, input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const b64 = e.target.result;
+    if (side === 'front') frontB64 = b64;
+    else backB64 = b64;
+    const zone = document.getElementById(side+'-zone');
+    zone.classList.add('has-photo');
+    zone.innerHTML = `<img src="${b64}" alt="${side}"/>`;
+  };
+  reader.readAsDataURL(file);
+}
+
+// ══════════════════════════════════════
+// GEMINI AI ANALYSIS
+// ══════════════════════════════════════
+async function analyzeWithGemini() {
+  const geminiKey = cfg.geminiKey || DEFAULT_GEMINI_KEY;
+  if (!geminiKey) { toast('⚙️ Add your Gemini API key in Setup first.'); openConfig(); return; }
+  if (!frontB64 && !backB64) { toast('Please upload at least one card photo first.'); return; }
+
+  const btn = document.getElementById('analyze-btn');
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Analysing…';
+
+  const images = [];
+  if (frontB64) images.push({ inlineData: { mimeType: 'image/jpeg', data: frontB64.split(',')[1] } });
+  if (backB64)  images.push({ inlineData: { mimeType: 'image/jpeg', data: backB64.split(',')[1] } });
+
+  const prompt = `You are analysing a card (business card, membership card, or ID card).
+Extract all information and respond ONLY with a valid JSON object with these keys:
+title, category (one of: business/membership/loyalty/other), name, phone, email, address, number, website, notes, rawText.
+- title: short descriptive name like "Yash's HDFC Card" or "Sri Ram Dhall Business Card"
+- rawText: all text you can read on the card
+- Leave a field as empty string "" if not found.
+Respond ONLY with the JSON object, no markdown, no explanation.`;
+
+  try {
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite-preview-06-17:generateContent?key=${geminiKey}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{ parts: [...images, { text: prompt }] }],
+        generationConfig: { temperature: 0.1 }
+      })
+    });
+    const data = await res.json();
+    const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    const clean = text.replace(/```json|```/g,'').trim();
+    const parsed = JSON.parse(clean);
+
+    if (parsed.title)    document.getElementById('f-title').value    = parsed.title;
+    if (parsed.category) document.getElementById('f-category').value = parsed.category;
+    if (parsed.name)     document.getElementById('f-name').value     = parsed.name;
+    if (parsed.phone)    document.getElementById('f-phone').value    = parsed.phone;
+    if (parsed.email)    document.getElementById('f-email').value    = parsed.email;
+    if (parsed.address)  document.getElementById('f-address').value  = parsed.address;
+    if (parsed.number)   document.getElementById('f-number').value   = parsed.number;
+    if (parsed.website)  document.getElementById('f-website').value  = parsed.website;
+    if (parsed.notes)    document.getElementById('f-notes').value    = parsed.notes;
+    if (parsed.rawText)  document.getElementById('f-raw').value      = parsed.rawText;
+
+    toast('✨ Card analysed! Please review and save.');
+  } catch(err) {
+    toast('AI error: ' + err.message + ' — please fill in manually.');
+  }
+
+  btn.disabled = false; btn.innerHTML = 'Analyse Card';
+}
+
+// ══════════════════════════════════════
+// THEME
+// ══════════════════════════════════════
+function toggleTheme() {
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  const next = isDark ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('ch_theme', next);
+  document.getElementById('theme-icon').textContent  = next === 'dark' ? '☀️' : '🌙';
+  document.getElementById('theme-label').textContent = next === 'dark' ? 'Light' : 'Dark';
+}
+function initTheme() {
+  const saved = localStorage.getItem('ch_theme') || 'light';
+  document.documentElement.setAttribute('data-theme', saved);
+  document.getElementById('theme-icon').textContent  = saved === 'dark' ? '☀️' : '🌙';
+  document.getElementById('theme-label').textContent = saved === 'dark' ? 'Light' : 'Dark';
+}
+
+// ══════════════════════════════════════
+// TOAST
+// ══════════════════════════════════════
+let toastTimer;
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 3200);
+}
+
+// ══════════════════════════════════════
+// UTILS
+// ══════════════════════════════════════
+function esc(str) {
+  return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// Close modals on backdrop click
+document.querySelectorAll('.modal-bg').forEach(bg => {
+  bg.addEventListener('click', e => { if (e.target === bg) bg.classList.remove('open'); });
+});
+
+// ══════════════════════════════════════
+// BOOT
+// ══════════════════════════════════════
+initTheme();
+initFirebase();
+</script>
+</body>
+</html>
