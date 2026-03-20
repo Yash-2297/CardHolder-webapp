@@ -688,6 +688,87 @@ body {
   padding: 6px 9px; transition: all 0.2s; flex-shrink: 0; line-height: 1;
 }
 .ef-remove:hover { color: var(--danger); border-color: var(--danger); background: #fff0f0; }
+
+/* ── VIEW TOGGLE ── */
+.view-toggle {
+  display: flex; gap: 2px;
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: 9px; padding: 3px;
+}
+.view-btn {
+  background: none; border: none; border-radius: 7px;
+  padding: 6px 10px; font-size: 16px; cursor: pointer;
+  color: var(--text3); transition: all 0.18s; line-height: 1;
+}
+.view-btn.active { background: var(--surface); color: var(--accent); box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+.view-btn:hover:not(.active) { color: var(--text2); }
+
+/* ── SORT BUTTON ── */
+.sort-btn {
+  display: flex; align-items: center; gap: 6px;
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: 9px; padding: 7px 13px;
+  font-size: 13px; font-weight: 500; color: var(--text2);
+  cursor: pointer; transition: all 0.18s; white-space: nowrap;
+  font-family: 'DM Sans', sans-serif;
+}
+.sort-btn:hover { border-color: var(--accent); color: var(--accent); }
+.sort-btn.active-sort { border-color: var(--accent); color: var(--accent); background: var(--accentbg); }
+
+/* ── LIST VIEW ── */
+.card-list { display: flex; flex-direction: column; gap: 8px; }
+.list-tile {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 12px; display: flex; align-items: center;
+  gap: 0; cursor: pointer; transition: all 0.2s;
+  box-shadow: var(--card-shadow); overflow: hidden;
+}
+.list-tile:hover { transform: translateX(3px); box-shadow: var(--card-shadow-hover); border-color: var(--blue-200); }
+.list-tile-photo {
+  width: 64px; height: 64px; flex-shrink: 0;
+  background: var(--bg2); border-right: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 26px; overflow: hidden;
+}
+.list-tile-photo img { width: 100%; height: 100%; object-fit: cover; }
+.list-tile-body {
+  flex: 1; padding: 10px 14px; min-width: 0;
+  display: flex; flex-direction: column; gap: 2px;
+}
+.list-tile-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 16px; color: var(--text); line-height: 1.2;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.list-tile-sub {
+  font-size: 12px; color: var(--text3);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.list-tile-cat {
+  font-size: 11px; font-weight: 600; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--accent);
+}
+.list-tile-right {
+  display: flex; align-items: center; gap: 6px;
+  padding: 0 12px; flex-shrink: 0;
+}
+.list-tile-date { font-size: 11px; color: var(--text3); }
+.list-tile-del {
+  background: none; border: none; font-size: 14px;
+  color: var(--text3); cursor: pointer; padding: 4px 6px;
+  border-radius: 6px; transition: color 0.2s;
+}
+.list-tile-del:hover { color: var(--danger); }
+
+/* ── ALPHA GROUP HEADER ── */
+.alpha-header {
+  font-family: 'DM Serif Display', serif;
+  font-size: 13px; font-weight: 400; color: var(--text3);
+  letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 6px 2px 2px; margin-top: 4px;
+  border-bottom: 1px solid var(--border);
+  grid-column: 1/-1;
+}
 </style>
 </head>
 <body>
@@ -786,6 +867,13 @@ body {
         <span class="search-icon">🔍</span>
         <input type="text" id="search-input" placeholder="Search name, number, address, store…" oninput="renderCards()"/>
       </div>
+      <button class="sort-btn" id="sort-btn" onclick="toggleSort()" title="Sort order">
+        <span id="sort-icon">🔤</span><span id="sort-label">A–Z</span>
+      </button>
+      <div class="view-toggle">
+        <button class="view-btn active" id="vbtn-grid" onclick="setView('grid')" title="Grid view">⊞</button>
+        <button class="view-btn" id="vbtn-list" onclick="setView('list')" title="List view">☰</button>
+      </div>
       <button class="add-card-btn" onclick="openAdd()">
         <span>＋</span><span class="btn-label">Add Card</span>
       </button>
@@ -829,11 +917,11 @@ body {
           </div>
         </div>
         <div>
-          <div class="photo-col-label">Back side</div>
+          <div class="photo-col-label">Back side <span style="font-size:11px;font-weight:400;color:var(--text3);margin-left:4px;">(optional)</span></div>
           <div class="photo-zone" id="zone-back" onclick="pickFile('file-back')">
             <span class="zone-ico">📷</span>
             <span class="zone-lbl">Back of card</span>
-            <span class="zone-hint">Click to upload</span>
+            <span class="zone-hint">Optional — skip if not needed</span>
             <input type="file" id="file-back" accept="image/*" onchange="gotPhoto('back',this)"/>
           </div>
           <div class="cam-row">
@@ -907,7 +995,10 @@ body {
   <div class="modal">
     <div class="modal-head">
       <span class="modal-title" id="detail-title">Card</span>
-      <button class="modal-x" onclick="closeDetail()">✕</button>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <button class="modal-x" id="detail-edit-btn" onclick="openEdit()" style="background:var(--accentbg);border-color:var(--accent);color:var(--accent);font-size:14px;font-weight:600;padding:6px 14px;">✏️ Edit</button>
+        <button class="modal-x" onclick="closeDetail()">✕</button>
+      </div>
     </div>
     <div class="modal-body" id="detail-body"></div>
   </div>
@@ -935,8 +1026,8 @@ const FIREBASE_CONFIG = {
   messagingSenderId: "643707074671",
   appId: "1:643707074671:web:f44dd77f6369ec0abe759a",
 };
-const GEMINI_KEY = "AIzaSyD8KKZqnD7t9lHz7uu6iafK50F8XSQP1nM";
-const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${GEMINI_KEY}`;
+// Gemini key is stored securely in Vercel env vars — calls go via /api/analyse
+const GEMINI_URL = '/api/analyse';
 
 // ═══════════════════════════════════════
 // STATE
@@ -945,6 +1036,10 @@ let db, auth, currentUser = null;
 let cards = [];
 let currentFilter = 'all';
 let frontB64 = null, backB64 = null;
+let editingId = null;
+let currentDetailId = null;
+let currentView = 'grid';
+let currentSort = 'alpha';
 
 // ═══════════════════════════════════════
 // FIREBASE INIT
@@ -1019,11 +1114,19 @@ async function saveCard() {
     createdAt: new Date().toISOString(),
   };
   try {
-    await db.collection('users').doc(currentUser.uid).collection('cards').add(card);
-    toast('✅ Card saved!');
+    const col = db.collection('users').doc(currentUser.uid).collection('cards');
+    if (editingId) {
+      // preserve original createdAt when editing
+      delete card.createdAt;
+      await col.doc(editingId).update(card);
+      toast('✅ Card updated!');
+    } else {
+      await col.add(card);
+      toast('✅ Card saved!');
+    }
     closeAdd();
   } catch(e) { toast('Error: ' + e.message); }
-  btn.disabled = false; btn.innerHTML = '💾 &nbsp;Save Card';
+  btn.disabled = false; btn.innerHTML = '<span id="save-btn-label">💾 &nbsp;Save Card</span>';
 }
 
 async function deleteCard(id, e) {
@@ -1045,33 +1148,81 @@ function renderCards() {
   if (q) list = list.filter(c =>
     [c.title,c.name,c.phone,c.email,c.address,c.city,c.number,c.website,c.notes,c.rawText,...(c.extraFields||[]).map(f=>f.label+' '+f.value)].join(' ').toLowerCase().includes(q)
   );
+  // Sort
+  if (currentSort === 'alpha') {
+    list = [...list].sort((a,b) => (a.title||'').localeCompare(b.title||'', 'en', {sensitivity:'base'}));
+  } else {
+    list = [...list].sort((a,b) => new Date(b.createdAt||0) - new Date(a.createdAt||0));
+  }
   document.getElementById('page-count').textContent = `${cards.length} card${cards.length!==1?'s':''}`;
-  const grid = document.getElementById('card-grid');
+  const container = document.getElementById('card-grid');
   if (!list.length) {
-    grid.innerHTML = `<div class="empty-state">
+    container.className = 'card-grid';
+    container.innerHTML = `<div class="empty-state">
       <div class="empty-icon">🗂</div>
       <h3>${q||currentFilter!=='all' ? 'No cards found' : 'No cards yet'}</h3>
       <p>${q||currentFilter!=='all' ? 'Try a different search or filter.' : 'Tap "Add Card" to photograph and store your first card.'}</p>
     </div>`; return;
   }
-  grid.innerHTML = list.map(c => {
-    const date = c.createdAt ? new Date(c.createdAt).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}) : '';
-    const photo = c.frontPhoto
-      ? `<div class="tile-photo"><img src="${c.frontPhoto}" alt=""/><span class="tile-cat-badge">${CAT_ICON[c.category]||'🃏'} ${CAT_LABEL[c.category]||'Card'}</span></div>`
-      : `<div class="tile-photo">${CAT_ICON[c.category]||'🃏'}<span class="tile-cat-badge">${CAT_LABEL[c.category]||'Card'}</span></div>`;
-    return `<div class="card-tile" onclick="openDetail('${c.id}')">
-      ${photo}
-      <div class="tile-body">
-        <div class="tile-cat-label">${CAT_LABEL[c.category]||'Card'}</div>
-        <div class="tile-title">${esc(c.title)}</div>
-        <div class="tile-sub">${esc(c.name||c.phone||c.number||'—')}</div>
-      </div>
-      <div class="tile-footer">
-        <span class="tile-date">${date}</span>
-        <button class="tile-del" onclick="deleteCard('${c.id}',event)" title="Delete">🗑</button>
-      </div>
-    </div>`;
-  }).join('');
+  if (currentView === 'grid') {
+    container.className = 'card-grid';
+    // Group alphabetically
+    let html = '';
+    let lastLetter = '';
+    list.forEach(c => {
+      const letter = currentSort === 'alpha' ? (c.title||'?')[0].toUpperCase() : null;
+      if (currentSort === 'alpha' && letter !== lastLetter) {
+        html += `<div class="alpha-header">${letter}</div>`;
+        lastLetter = letter;
+      }
+      const date = c.createdAt ? new Date(c.createdAt).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}) : '';
+      const photo = c.frontPhoto
+        ? `<div class="tile-photo"><img src="${c.frontPhoto}" alt=""/><span class="tile-cat-badge">${CAT_ICON[c.category]||'🃏'} ${CAT_LABEL[c.category]||'Card'}</span></div>`
+        : `<div class="tile-photo">${CAT_ICON[c.category]||'🃏'}<span class="tile-cat-badge">${CAT_LABEL[c.category]||'Card'}</span></div>`;
+      html += `<div class="card-tile" onclick="openDetail('${c.id}')">
+        ${photo}
+        <div class="tile-body">
+          <div class="tile-cat-label">${CAT_LABEL[c.category]||'Card'}</div>
+          <div class="tile-title">${esc(c.title)}</div>
+          <div class="tile-sub">${esc(c.name||c.phone||c.number||'—')}</div>
+        </div>
+        <div class="tile-footer">
+          <span class="tile-date">${date}</span>
+          <button class="tile-del" onclick="deleteCard('${c.id}',event)" title="Delete">🗑</button>
+        </div>
+      </div>`;
+    });
+    container.innerHTML = html;
+  } else {
+    // List view
+    container.className = 'card-list';
+    let html = '';
+    let lastLetter = '';
+    list.forEach(c => {
+      const letter = currentSort === 'alpha' ? (c.title||'?')[0].toUpperCase() : null;
+      if (currentSort === 'alpha' && letter !== lastLetter) {
+        html += `<div style="font-family:'DM Serif Display',serif;font-size:12px;color:var(--text3);letter-spacing:0.1em;text-transform:uppercase;padding:8px 4px 2px;border-bottom:1px solid var(--border);margin-top:4px;">${letter}</div>`;
+        lastLetter = letter;
+      }
+      const date = c.createdAt ? new Date(c.createdAt).toLocaleDateString('en-IN',{day:'numeric',month:'short'}) : '';
+      const photoEl = c.frontPhoto
+        ? `<div class="list-tile-photo"><img src="${c.frontPhoto}" alt=""/></div>`
+        : `<div class="list-tile-photo">${CAT_ICON[c.category]||'🃏'}</div>`;
+      html += `<div class="list-tile" onclick="openDetail('${c.id}')">
+        ${photoEl}
+        <div class="list-tile-body">
+          <div class="list-tile-cat">${CAT_LABEL[c.category]||'Card'}</div>
+          <div class="list-tile-title">${esc(c.title)}</div>
+          <div class="list-tile-sub">${esc(c.name||c.phone||c.number||'—')}</div>
+        </div>
+        <div class="list-tile-right">
+          <span class="list-tile-date">${date}</span>
+          <button class="list-tile-del" onclick="deleteCard('${c.id}',event)" title="Delete">🗑</button>
+        </div>
+      </div>`;
+    });
+    container.innerHTML = html;
+  }
 }
 
 function setFilter(f) {
@@ -1080,11 +1231,28 @@ function setFilter(f) {
   renderCards();
 }
 
+function setView(v) {
+  currentView = v;
+  document.getElementById('vbtn-grid').classList.toggle('active', v==='grid');
+  document.getElementById('vbtn-list').classList.toggle('active', v==='list');
+  renderCards();
+}
+
+function toggleSort() {
+  currentSort = currentSort === 'alpha' ? 'recent' : 'alpha';
+  const btn = document.getElementById('sort-btn');
+  document.getElementById('sort-icon').textContent = currentSort === 'alpha' ? '🔤' : '🕐';
+  document.getElementById('sort-label').textContent = currentSort === 'alpha' ? 'A–Z' : 'Recent';
+  btn.classList.toggle('active-sort', currentSort === 'alpha');
+  renderCards();
+}
+
 // ═══════════════════════════════════════
 // DETAIL
 // ═══════════════════════════════════════
 function openDetail(id) {
   const c = cards.find(x => x.id === id); if (!c) return;
+  currentDetailId = id;
   document.getElementById('detail-title').textContent = c.title;
   const fields = [
     {icon:'👤',label:'Name',val:c.name},{icon:'📞',label:'Phone',val:c.phone},
@@ -1117,21 +1285,69 @@ function closeDetail() { document.getElementById('detail-modal').classList.remov
 // ADD MODAL
 // ═══════════════════════════════════════
 function openAdd() {
+  editingId = null;
   frontB64 = null; backB64 = null;
   ['f-title','f-name','f-phone','f-email','f-addr','f-city','f-num','f-web','f-notes','f-raw'].forEach(id => document.getElementById(id).value='');
   document.getElementById('f-cat').value = 'business';
   document.getElementById('extra-fields-list').innerHTML = '';
+  document.querySelector('#add-modal .modal-title').textContent = 'Add New Card';
+  document.getElementById('save-btn').innerHTML = '💾  Save Card';
   resetZone('front'); resetZone('back');
   document.getElementById('add-modal').classList.add('open');
+  document.querySelector('#add-modal .modal').scrollTop = 0;
 }
-function closeAdd() { document.getElementById('add-modal').classList.remove('open'); }
+function closeAdd() {
+  document.getElementById('add-modal').classList.remove('open');
+  editingId = null;
+}
+
+function openEdit() {
+  const c = cards.find(x => x.id === currentDetailId); if (!c) return;
+  closeDetail();
+  editingId = c.id;
+  frontB64 = c.frontPhoto || null;
+  backB64  = c.backPhoto  || null;
+
+  document.getElementById('f-title').value  = c.title    || '';
+  document.getElementById('f-cat').value    = c.category || 'other';
+  document.getElementById('f-name').value   = c.name     || '';
+  document.getElementById('f-phone').value  = c.phone    || '';
+  document.getElementById('f-email').value  = c.email    || '';
+  document.getElementById('f-addr').value   = c.address  || '';
+  document.getElementById('f-city').value   = c.city     || '';
+  document.getElementById('f-num').value    = c.number   || '';
+  document.getElementById('f-web').value    = c.website  || '';
+  document.getElementById('f-notes').value  = c.notes    || '';
+  document.getElementById('f-raw').value    = c.rawText  || '';
+
+  // Restore extra fields
+  document.getElementById('extra-fields-list').innerHTML = '';
+  (c.extraFields || []).forEach(f => addExtraField(f.label, f.value));
+
+  // Restore photos in zones
+  if (c.frontPhoto) {
+    const zf = document.getElementById('zone-front');
+    zf.classList.add('filled');
+    zf.innerHTML = `<img src="${c.frontPhoto}" alt="front"/>`;
+  } else { resetZone('front'); }
+  if (c.backPhoto) {
+    const zb = document.getElementById('zone-back');
+    zb.classList.add('filled');
+    zb.innerHTML = `<img src="${c.backPhoto}" alt="back"/>`;
+  } else { resetZone('back'); }
+
+  document.querySelector('#add-modal .modal-title').textContent = 'Edit Card';
+  document.getElementById('save-btn').innerHTML = '💾  Update Card';
+  document.getElementById('add-modal').classList.add('open');
+  document.querySelector('#add-modal .modal').scrollTop = 0;
+}
 
 function resetZone(side) {
   const z = document.getElementById('zone-'+side);
   z.classList.remove('filled');
   z.innerHTML = `<span class="zone-ico">📷</span>
     <span class="zone-lbl">${side==='front'?'Front':'Back'} of card</span>
-    <span class="zone-hint">Click to upload</span>
+    <span class="zone-hint">${side==='back'?'Optional — skip if not needed':'Click to upload'}</span>
     <input type="file" id="file-${side}" accept="image/*" onchange="gotPhoto('${side}',this)"/>`;
 }
 
